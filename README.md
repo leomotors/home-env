@@ -1,10 +1,19 @@
-# Home Environment
+# Home Environment Monitoring System 
+![MIT License](https://img.shields.io/badge/License-MIT-green.svg)  ![Workflow Status](https://github.com/Leomotors/home-env/actions/workflows/release.yml/badge.svg)
 
-Use ESP32 + AHT20 to gather temperature and humidity information.
-Accessible from website and prometheus.
+This repository contains a home environment monitoring system that utilizes ESP32 and AHT20 sensors to collect temperature and humidity data. The gathered information is accessible via a web interface and can be integrated with Prometheus for advanced monitoring.
 
-## Sincerely Gratitude
+## Features
 
-- Inspired by, hardware recommendation (aka โดนป้ายยา) by https://github.com/WasinUddy/Homelab-Environments-Monitor
+- Real-time temperature and humidity monitoring
+- Web interface for easy data access
+- Prometheus integration for advanced analytics
 
-- Go Backend Server written by ChatGPT
+## Acknowledgments
+
+- Special thanks to [WasinUddy](https://github.com/WasinUddy/Homelab-Environments-Monitor) for hardware recommendations and inspiration (ป้ายยา USA PCB).
+- Backend server written by ChatGPT.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
