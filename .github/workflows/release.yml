@@ -44,7 +44,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: server
           file: Dockerfile
           push: true
           tags: ghcr.io/leomotors/home-env:${{ github.ref_name }},ghcr.io/leomotors/home-env:latest
