@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Homelab Environments</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+
+      .weather-info {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .weather-card {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 150px;
+        margin: 3rem;
+      }
+
+      .weather-icon {
+        font-size: 48px;
+      }
+
+      h2 {
+        margin-top: 10px;
+      }
+
+      p {
+        font-size: 24px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Homelab Environments</h1>
+    <div class="weather-info">
+      <div class="weather-card">
+        <i class="material-icons weather-icon">thermostat</i>
+        <h2>Temperature</h2>
+        <p id="temperature">{{ TEMPERATURE }} °C</p>
+      </div>
+      <div class="weather-card">
+        <i class="material-icons weather-icon">opacity</i>
+        <h2>Humidity</h2>
+        <p id="humidity">{{ HUMIDITY }}%</p>
+      </div>
+    </div>
+  </body>
+</html>
