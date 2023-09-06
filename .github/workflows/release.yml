@@ -45,7 +45,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: server
-          file: Dockerfile
           push: true
           tags: ghcr.io/leomotors/home-env:${{ github.ref_name }},ghcr.io/leomotors/home-env:latest
           cache-from: type=gha
