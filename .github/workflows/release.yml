@@ -46,6 +46,6 @@ jobs:
         with:
           context: server
           push: true
-          tags: ghcr.io/leomotors/home-env:${{ github.ref_name }},ghcr.io/leomotors/home-env:latest
+          tags: ghcr.io/leomotors/home-env-server:${{ github.ref_name }},ghcr.io/leomotors/home-env-server:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
