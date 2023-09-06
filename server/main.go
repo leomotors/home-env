@@ -103,8 +103,6 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	replacedHTML := strings.Replace(htmlString, "{{ TEMPERATURE }}", fmt.Sprintf("%.2f", currentTemperature), -1)
 	replacedHTML = strings.Replace(replacedHTML, "{{ HUMIDITY }}", fmt.Sprintf("%.2f", currentHumidity), -1)
 
-	fmt.Println(replacedHTML)
-
 	// Set the content type to HTML
 	w.Header().Set("Content-Type", "text/html")
 
