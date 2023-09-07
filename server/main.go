@@ -21,6 +21,10 @@ var (
 		Name: "home_humidity",
 		Help: "Current humidity level as a percentage.",
 	})
+	healthStatus = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "home_health_status",
+		Help: "ESP32 is maintaining connection with server.",
+	})
 )
 
 var currentTemperature = 0.0
@@ -30,12 +34,32 @@ var lastUpdated = time.Now()
 func init() {
 	prometheus.MustRegister(temperature)
 	prometheus.MustRegister(humidity)
+	prometheus.MustRegister(healthStatus)
 
 	// Check if PASSWORD environment variable is set
 	expectedPassword := os.Getenv("PASSWORD")
 	if expectedPassword == "" {
 		fmt.Println("ERROR: PASSWORD environment variable not set.")
 		os.Exit(1)
+	}
+
+	go setHealth()
+}
+
+func getLastUpdatedSeconds() float64 {
+	return time.Now().Sub(lastUpdated).Seconds()
+}
+
+func setHealth() {
+	for {
+		lastUpdatedSeconds := getLastUpdatedSeconds()
+
+		if lastUpdatedSeconds > 5 {
+			healthStatus.Set(0)
+		} else {
+			healthStatus.Set(1)
+		}
+		time.Sleep(1 * time.Second)
 	}
 }
 
@@ -79,8 +103,10 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 
 	temperature.Set(temp)
 	currentTemperature = temp
+
 	humidity.Set(hum)
 	currentHumidity = hum
+
 	lastUpdated = time.Now()
 
 	w.WriteHeader(http.StatusAccepted)
@@ -112,7 +138,7 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 		"{{ HUMIDITY }}",
 		fmt.Sprintf("%.2f", currentHumidity), -1)
 
-	lastUpdatedSeconds := time.Now().Sub(lastUpdated).Seconds()
+	lastUpdatedSeconds := getLastUpdatedSeconds()
 	replacedHTML = strings.Replace(
 		replacedHTML,
 		"{{ LAST_UPDATED }}",
@@ -131,7 +157,7 @@ func getDataHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	lastUpdatedSeconds := time.Now().Sub(lastUpdated).Seconds()
+	lastUpdatedSeconds := getLastUpdatedSeconds()
 	data := fmt.Sprintf(
 		"{\"temperature\": %.2f, \"humidity\": %.2f, \"lastUpdated\": %.2f}",
 		currentTemperature, currentHumidity, lastUpdatedSeconds)
