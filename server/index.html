@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Homelab Environments</title>
+    <title>Home Environments</title>
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
@@ -42,7 +42,8 @@
     </style>
   </head>
   <body>
-    <h1>Homelab Environments</h1>
+    <h1>Home Environments</h1>
+    <p id="last-updated">Last Updated: {{ LAST_UPDATED }} seconds ago</p>
     <div class="weather-info">
       <div class="weather-card">
         <i class="material-icons weather-icon">thermostat</i>
@@ -55,5 +56,23 @@
         <p id="humidity">{{ HUMIDITY }}%</p>
       </div>
     </div>
+
+    <script type="module">
+      async function update() {
+        const obj = await fetch("/data").then((r) => r.json());
+
+        const { temperature, humidity, lastUpdated } = obj;
+
+        document.getElementById(
+          "temperature"
+        ).textContent = `${temperature} °C`;
+        document.getElementById("humidity").textContent = `${humidity}%`;
+        document.getElementById(
+          "last-updated"
+        ).textContent = `Last Updated: ${lastUpdated.toFixed(2)} seconds ago`;
+      }
+
+      setInterval(update, 3500);
+    </script>
   </body>
 </html>

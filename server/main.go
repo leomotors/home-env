@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -24,6 +25,7 @@ var (
 
 var currentTemperature = 0.0
 var currentHumidity = 0.0
+var lastUpdated = time.Now()
 
 func init() {
 	prometheus.MustRegister(temperature)
@@ -79,6 +81,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	currentTemperature = temp
 	humidity.Set(hum)
 	currentHumidity = hum
+	lastUpdated = time.Now()
 
 	w.WriteHeader(http.StatusAccepted)
 }
@@ -100,8 +103,20 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	htmlString := string(htmlContent)
 
 	// Replace a string in the HTML content
-	replacedHTML := strings.Replace(htmlString, "{{ TEMPERATURE }}", fmt.Sprintf("%.2f", currentTemperature), -1)
-	replacedHTML = strings.Replace(replacedHTML, "{{ HUMIDITY }}", fmt.Sprintf("%.2f", currentHumidity), -1)
+	replacedHTML := strings.Replace(
+		htmlString,
+		"{{ TEMPERATURE }}",
+		fmt.Sprintf("%.2f", currentTemperature), -1)
+	replacedHTML = strings.Replace(
+		replacedHTML,
+		"{{ HUMIDITY }}",
+		fmt.Sprintf("%.2f", currentHumidity), -1)
+
+	lastUpdatedSeconds := time.Now().Sub(lastUpdated).Seconds()
+	replacedHTML = strings.Replace(
+		replacedHTML,
+		"{{ LAST_UPDATED }}",
+		fmt.Sprintf("%.2f", lastUpdatedSeconds), -1)
 
 	// Set the content type to HTML
 	w.Header().Set("Content-Type", "text/html")
@@ -110,10 +125,30 @@ func getHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(replacedHTML))
 }
 
+func getDataHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	lastUpdatedSeconds := time.Now().Sub(lastUpdated).Seconds()
+	data := fmt.Sprintf(
+		"{\"temperature\": %.2f, \"humidity\": %.2f, \"lastUpdated\": %.2f}",
+		currentTemperature, currentHumidity, lastUpdatedSeconds)
+
+	w.Header().Set("Content-Type", "application/json")
+	_, err := w.Write([]byte(data))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func main() {
 	http.HandleFunc("/metrics", metricsHandler)
 	http.HandleFunc("/update", postHandler)
 	http.HandleFunc("/", getHandler)
+	http.HandleFunc("/data", getDataHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
