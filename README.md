@@ -1,5 +1,6 @@
-# Home Environment Monitoring System 
-![MIT License](https://img.shields.io/badge/License-MIT-green.svg)  ![Workflow Status](https://github.com/Leomotors/home-env/actions/workflows/release.yml/badge.svg)
+# Home Environment Monitoring System
+
+![MIT License](https://img.shields.io/badge/License-MIT-green.svg) ![Workflow Status](https://github.com/Leomotors/home-env/actions/workflows/release.yml/badge.svg)
 
 This repository contains a home environment monitoring system that utilizes ESP32 and AHT20 sensors to collect temperature and humidity data. The gathered information is accessible via a web interface and can be integrated with Prometheus for advanced monitoring.
 
@@ -17,3 +18,7 @@ This repository contains a home environment monitoring system that utilizes ESP3
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## Stack
+
+![](./stack.webp)
