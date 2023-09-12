@@ -21,4 +21,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Stack
 
-![](./stack.webp)
+![](./images/stack.webp)
+
+## Feature
+
+Alert when ESP32 is not sending data
+
+![](./images/discord-alert.webp)

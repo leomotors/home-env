@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -43,11 +44,50 @@ func init() {
 		os.Exit(1)
 	}
 
+	token := os.Getenv("DISCORD_TOKEN")
+	channelID := os.Getenv("DISCORD_CHANNEL_ID")
+
+	if token == "" || channelID == "" {
+		fmt.Println("ERROR: DISCORD_TOKEN or DISCORD_CHANNEL_ID environment variables not set.")
+		os.Exit(1)
+	}
+
 	go setHealth()
 }
 
 func getLastUpdatedSeconds() float64 {
-	return time.Now().Sub(lastUpdated).Seconds()
+	return time.Since(lastUpdated).Seconds()
+}
+
+var alertThreshold = 10.0
+
+func incrementLevel() {
+	if alertThreshold == 3600.0 {
+		alertThreshold += 3600.0
+		return
+	}
+	alertThreshold = alertLevelIncrement[alertThreshold]
+}
+
+var alertLevelIncrement = map[float64]float64{
+	10.0:  60.0,
+	60.0:  600.0,
+	600.0: 3600.0,
+}
+
+func getAlertMessage() string {
+	if alertThreshold > 3600.0 {
+		return "2時間以上"
+	}
+
+	return alertLabel[alertThreshold]
+}
+
+var alertLabel = map[float64]string{
+	10.0:   "10秒",
+	60.0:   "1分",
+	600.0:  "10分",
+	3600.0: "1時間",
 }
 
 func setHealth() {
@@ -56,11 +96,75 @@ func setHealth() {
 
 		if lastUpdatedSeconds > 5 {
 			healthStatus.Set(0)
+
+			if lastUpdatedSeconds >= alertThreshold {
+				alertDiscord()
+				incrementLevel()
+			}
 		} else {
 			healthStatus.Set(1)
+			alertThreshold = 10.0
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func alertDiscord() {
+	token := os.Getenv("DISCORD_TOKEN")
+	channelID := os.Getenv("DISCORD_CHANNEL_ID")
+
+	apiUrl := fmt.Sprintf("https://discord.com/api/v10/channels/%s/messages", channelID)
+
+	requestData := map[string]interface{}{
+		"content": fmt.Sprintf("# :warning::warning::warning: 市民请注意! :warning::warning::warning:\n## Your ESP32 does not do its job for %s!\n# CHECK IT NOW!\n如果您毫不犹豫、将从您的个人资料中扣除更多社会积分!!!", getAlertMessage()),
+	}
+
+	// Serialize the JSON data
+	requestBody, err := json.Marshal(requestData)
+	if err != nil {
+		fmt.Println("Error marshaling JSON:", err)
+		return
+	}
+
+	// Create an HTTP client
+	client := &http.Client{}
+
+	// Create a POST request with the JSON body
+	req, err := http.NewRequest("POST", apiUrl, bytes.NewBuffer(requestBody))
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+
+	// Set the Content-Type header to indicate that the request body is in JSON format
+	req.Header.Set("Content-Type", "application/json")
+
+	// Set the Authorization header with your token or credentials
+	req.Header.Set("Authorization", fmt.Sprintf("Bot %s", token))
+
+	// Send the request
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Check the response status code
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("Request failed with status code:", resp.StatusCode)
+
+		var responseData map[string]interface{}
+		if err := json.NewDecoder(resp.Body).Decode(&responseData); err != nil {
+			fmt.Println("Error decoding JSON response:", err)
+			return
+		}
+
+		fmt.Println("Response:", responseData)
+		return
+	}
+
+	fmt.Println("Alert Success")
 }
 
 func metricsHandler(w http.ResponseWriter, r *http.Request) {
