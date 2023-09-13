@@ -62,7 +62,7 @@ func getLastUpdatedSeconds() float64 {
 var alertThreshold = 10.0
 
 func incrementLevel() {
-	if alertThreshold == 3600.0 {
+	if alertThreshold >= 3600.0 {
 		alertThreshold += 3600.0
 		return
 	}
@@ -98,6 +98,7 @@ func setHealth() {
 			healthStatus.Set(0)
 
 			if lastUpdatedSeconds >= alertThreshold {
+				fmt.Printf("Alerting: threshold = %f\n", alertThreshold)
 				alertDiscord()
 				incrementLevel()
 			}
