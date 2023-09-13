@@ -99,25 +99,29 @@ func setHealth() {
 
 			if lastUpdatedSeconds >= float64(alertThreshold) {
 				fmt.Printf("Alerting: threshold = %d\n", alertThreshold)
-				alertDiscord()
+				alertDiscord(fmt.Sprintf("# :warning::warning::warning: 市民请注意! :warning::warning::warning:\n## Your ESP32 does not do its job for %s!\n# CHECK IT NOW!\n如果您毫不犹豫、将从您的个人资料中扣除更多社会积分!!!", getAlertMessage()))
 				incrementLevel()
 			}
 		} else {
 			healthStatus.Set(1)
-			alertThreshold = 10.0
+			if alertThreshold > 10 {
+				fmt.Printf("Resetting alert: threshold = %d\n", alertThreshold)
+				alertDiscord("# :white_check_mark::white_check_mark::white_check_mark: 干得好公民! :white_check_mark::white_check_mark::white_check_mark:\n## Your ESP32 is back to work!\n# You are a good citizen!\n没有共产党就没有新中国 没有共产党就没有新中国 !!!")
+				alertThreshold = 10.0
+			}
 		}
 		time.Sleep(1 * time.Second)
 	}
 }
 
-func alertDiscord() {
+func alertDiscord(msg string) {
 	token := os.Getenv("DISCORD_TOKEN")
 	channelID := os.Getenv("DISCORD_CHANNEL_ID")
 
 	apiUrl := fmt.Sprintf("https://discord.com/api/v10/channels/%s/messages", channelID)
 
 	requestData := map[string]interface{}{
-		"content": fmt.Sprintf("# :warning::warning::warning: 市民请注意! :warning::warning::warning:\n## Your ESP32 does not do its job for %s!\n# CHECK IT NOW!\n如果您毫不犹豫、将从您的个人资料中扣除更多社会积分!!!", getAlertMessage()),
+		"content": msg,
 	}
 
 	// Serialize the JSON data
