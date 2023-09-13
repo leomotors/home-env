@@ -59,35 +59,35 @@ func getLastUpdatedSeconds() float64 {
 	return time.Since(lastUpdated).Seconds()
 }
 
-var alertThreshold = 10.0
+var alertThreshold = 10
 
 func incrementLevel() {
-	if alertThreshold >= 3600.0 {
-		alertThreshold += 3600.0
+	if alertThreshold >= 3600 {
+		alertThreshold += 3600
 		return
 	}
 	alertThreshold = alertLevelIncrement[alertThreshold]
 }
 
-var alertLevelIncrement = map[float64]float64{
-	10.0:  60.0,
-	60.0:  600.0,
-	600.0: 3600.0,
+var alertLevelIncrement = map[int]int{
+	10:  60,
+	60:  600,
+	600: 3600,
 }
 
 func getAlertMessage() string {
-	if alertThreshold > 3600.0 {
-		return "2時間以上"
+	if alertThreshold > 3600 {
+		return fmt.Sprintf("%d時間", alertThreshold/3600)
 	}
 
 	return alertLabel[alertThreshold]
 }
 
-var alertLabel = map[float64]string{
-	10.0:   "10秒",
-	60.0:   "1分",
-	600.0:  "10分",
-	3600.0: "1時間",
+var alertLabel = map[int]string{
+	10:   "10秒",
+	60:   "1分",
+	600:  "10分",
+	3600: "1時間",
 }
 
 func setHealth() {
@@ -97,8 +97,8 @@ func setHealth() {
 		if lastUpdatedSeconds > 5 {
 			healthStatus.Set(0)
 
-			if lastUpdatedSeconds >= alertThreshold {
-				fmt.Printf("Alerting: threshold = %f\n", alertThreshold)
+			if lastUpdatedSeconds >= float64(alertThreshold) {
+				fmt.Printf("Alerting: threshold = %d\n", alertThreshold)
 				alertDiscord()
 				incrementLevel()
 			}
