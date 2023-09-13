@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"os"
 	"strings"
@@ -37,6 +38,9 @@ func init() {
 	prometheus.MustRegister(humidity)
 	prometheus.MustRegister(healthStatus)
 
+	temperature.Set(math.NaN())
+	humidity.Set(math.NaN())
+
 	// Check if PASSWORD environment variable is set
 	expectedPassword := os.Getenv("PASSWORD")
 	if expectedPassword == "" {
@@ -59,7 +63,10 @@ func getLastUpdatedSeconds() float64 {
 	return time.Since(lastUpdated).Seconds()
 }
 
-var alertThreshold = 10
+const initialAlertThreshold = 15
+const resetThreshold = 10
+
+var alertThreshold = initialAlertThreshold
 
 func incrementLevel() {
 	if alertThreshold >= 3600 {
@@ -70,9 +77,9 @@ func incrementLevel() {
 }
 
 var alertLevelIncrement = map[int]int{
-	10:  60,
-	60:  600,
-	600: 3600,
+	initialAlertThreshold: 60,
+	60:                    600,
+	600:                   3600,
 }
 
 func getAlertMessage() string {
@@ -84,18 +91,20 @@ func getAlertMessage() string {
 }
 
 var alertLabel = map[int]string{
-	10:   "10秒",
-	60:   "1分",
-	600:  "10分",
-	3600: "1時間",
+	initialAlertThreshold: "15秒",
+	60:                    "1分",
+	600:                   "10分",
+	3600:                  "1時間",
 }
 
 func setHealth() {
 	for {
 		lastUpdatedSeconds := getLastUpdatedSeconds()
 
-		if lastUpdatedSeconds > 5 {
+		if lastUpdatedSeconds > resetThreshold {
 			healthStatus.Set(0)
+			temperature.Set(math.NaN())
+			humidity.Set(math.NaN())
 
 			if lastUpdatedSeconds >= float64(alertThreshold) {
 				fmt.Printf("Alerting: threshold = %d\n", alertThreshold)
@@ -104,10 +113,10 @@ func setHealth() {
 			}
 		} else {
 			healthStatus.Set(1)
-			if alertThreshold > 10 {
+			if alertThreshold > initialAlertThreshold {
 				fmt.Printf("Resetting alert: threshold = %d\n", alertThreshold)
 				alertDiscord("# :white_check_mark::white_check_mark::white_check_mark: 干得好公民! :white_check_mark::white_check_mark::white_check_mark:\n## Your ESP32 is back to work!\n# You are a good citizen!\n没有共产党就没有新中国 没有共产党就没有新中国 !!!")
-				alertThreshold = 10.0
+				alertThreshold = initialAlertThreshold
 			}
 		}
 		time.Sleep(1 * time.Second)
