@@ -16,7 +16,7 @@ void setup() {
     Serial.begin(115200);
     Serial.println("Adafruit AHT10/AHT20 demo!");
 
-    WiFi.begin(ssid, password);
+    connectToWiFi();
 
     if (!aht.begin()) {
         Serial.println("Could not find AHT? Check wiring");
@@ -24,18 +24,14 @@ void setup() {
     }
 
     Serial.println("AHT10 or AHT20 found");
-
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-
-    Serial.println("");
-    Serial.print("Connected to WiFi network with IP Address: ");
-    Serial.println(WiFi.localIP());
 }
 
 void loop() {
+    if (WiFi.status() != WL_CONNECTED) {
+        // Wi-Fi is disconnected, attempt to reconnect
+        connectToWiFi();
+    }
+
     sensors_event_t humidity, temp;
     // populate temp and humidity objects with fresh data
     aht.getEvent(&humidity, &temp);
@@ -49,6 +45,18 @@ void loop() {
     updateData(humidity, temp);
 
     delay(3000);
+}
+
+void connectToWiFi() {
+    Serial.println("Connecting to WiFi...");
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("");
+    Serial.print("Connected to WiFi network with IP Address: ");
+    Serial.println(WiFi.localIP());
 }
 
 void updateData(sensors_event_t humidty, sensors_event_t temp) {
