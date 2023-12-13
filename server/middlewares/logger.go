@@ -46,6 +46,10 @@ func Logger(next http.Handler) http.Handler {
 			return
 		}
 
+		if path == "/update" && recorder.status == http.StatusAccepted {
+			return
+		}
+
 		log.Printf("%s %s %s %d (%s)", ip, method, path, recorder.status, utils.TruncateString(userAgent, 30))
 	})
 }
