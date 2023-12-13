@@ -2,6 +2,7 @@ package services
 
 import (
 	"math"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -48,8 +49,20 @@ func GetSensorManager(sensorId string) *SensorManager {
 	return sensors[sensorId]
 }
 
-func GetSensorValue(sensorId string) SensorValue {
-	return sensors[sensorId].values
+type PublicSensorValue struct {
+	Temperature float64
+	Humidity    float64
+	LastUpdated float64
+}
+
+func GetSensorValue(sensorId string) PublicSensorValue {
+	manager := sensors[sensorId]
+
+	return PublicSensorValue{
+		manager.values.temperature,
+		manager.values.humidity,
+		time.Since(manager.lastUpdated).Seconds(),
+	}
 }
 
 // Should be called every 5 seconds

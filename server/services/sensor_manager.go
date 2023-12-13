@@ -13,9 +13,9 @@ type SensorGauge struct {
 }
 
 type SensorValue struct {
-	temperatureGauge float64
-	humidity         float64
-	healthStatus     bool
+	temperature  float64
+	humidity     float64
+	healthStatus bool
 }
 
 type SensorManager struct {
@@ -29,7 +29,7 @@ type SensorManager struct {
 
 func (sensorManager *SensorManager) SetValue(temperature float64, humidity float64) {
 	sensorManager.gauges.temperature.Set(temperature)
-	sensorManager.values.temperatureGauge = temperature
+	sensorManager.values.temperature = temperature
 
 	sensorManager.gauges.humidity.Set(humidity)
 	sensorManager.values.humidity = humidity
@@ -57,4 +57,8 @@ func (sensorManager *SensorManager) HealthCheck() {
 		SendDownAlert(sensorManager.id, sensorManager.alertLevel)
 		sensorManager.alertLevel++
 	}
+}
+
+func (sensorManager *SensorManager) LastUpdated() float64 {
+	return time.Since(sensorManager.lastUpdated).Seconds()
 }

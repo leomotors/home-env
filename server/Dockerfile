@@ -1,30 +1,26 @@
-# syntax=docker/dockerfile:1
-FROM golang:1.21-alpine3.18 as builder
+FROM golang:1.21-alpine3.19 as builder
 
 # Set destination for COPY
 WORKDIR /app
 
-# Download Go modules
-COPY go.mod go.sum ./
+# Copy all source files and download Go modules
+COPY . ./
 RUN go mod download
 
-# Copy the source code. Note the slash at the end, as explained in
-# https://docs.docker.com/engine/reference/builder/#copy
-COPY *.go ./
-
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /home-env-server
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./home-env-server ./cmd/main.go
 
-FROM alpine:3.18 AS runner
+FROM alpine:3.19 AS runner
+
+LABEL name "home-env-server"
 
 WORKDIR /app
-
 USER guest
 
-# Copy built files
-COPY --chown=guest:guest --from=builder /home-env-server ./
+# Copy built executable
+COPY --chown=guest:guest --from=builder /app/home-env-server ./
 # Assets
-COPY --chown=guest:guest *.html ./
+COPY --chown=guest:guest public ./public
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.

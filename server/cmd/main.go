@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/leomotors/home-env/constants"
 	"github.com/leomotors/home-env/middlewares"
 	"github.com/leomotors/home-env/routes"
 	"github.com/leomotors/home-env/services"
@@ -22,10 +23,11 @@ func loop() {
 func main() {
 	secret := services.GetSecret()
 
-	services.RegisterSensor("main_room", "Office Room")
-	services.RegisterSensor("living_room", "Living Room")
+	services.RegisterSensor(constants.MainRoomId, "Office Room")
+	services.RegisterSensor(constants.LivingRoomId, "Living Room")
 
 	mux := http.NewServeMux()
+	mux.Handle("/data", routes.DataGetHandler)
 	mux.Handle("/metrics", routes.MetricsGetHandler)
 	mux.Handle("/update", routes.UpdatePostHandler)
 
