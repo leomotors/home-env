@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/leomotors/home-env/src/services"
 )
@@ -31,6 +30,18 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sensorId, ok := data["sensorId"].(string)
+	if !ok {
+		http.Error(w, "Invalid sensorId", http.StatusBadRequest)
+		return
+	}
+
+	sensorManager := services.GetSensorManager(sensorId)
+	if sensorManager == nil {
+		http.Error(w, "Not Found", http.StatusNotFound)
+		return
+	}
+
 	temp, ok := data["temperature"].(float64)
 	if !ok {
 		http.Error(w, "Invalid temperature", http.StatusBadRequest)
@@ -43,13 +54,9 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	temperature.Set(temp)
-	currentTemperature = temp
-
-	humidity.Set(hum)
-	currentHumidity = hum
-
-	lastUpdated = time.Now()
+	sensorManager.SetValue(temp, hum)
 
 	w.WriteHeader(http.StatusAccepted)
 }
+
+var DataPostHandler = http.HandlerFunc(postHandler)

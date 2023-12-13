@@ -8,11 +8,8 @@ import (
 )
 
 func TestMeetsThreshold(t *testing.T) {
-	assert.Panics(t, func() { services.MeetsThreshold(-1, 69420) })
-	assert.Panics(t, func() { services.MeetsThreshold(-69, 0) })
-
 	for i := 0; i < 30; i++ {
-		for j := 0; j < 10; j++ {
+		for j := uint(0); j < 10; j++ {
 			assert.False(t, services.MeetsThreshold(j, float64(i)))
 		}
 	}
@@ -41,9 +38,6 @@ func TestMeetsThreshold(t *testing.T) {
 }
 
 func TestGetAlertText(t *testing.T) {
-	assert.Panics(t, func() { services.GetAlertText(-1) })
-	assert.Panics(t, func() { services.GetAlertText(-69) })
-
 	assert.Equal(t, "30秒", services.GetAlertText(0))
 	assert.Equal(t, "1分", services.GetAlertText(1))
 	assert.Equal(t, "10分", services.GetAlertText(2))

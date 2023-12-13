@@ -2,11 +2,7 @@ package services
 
 import "fmt"
 
-func MeetsThreshold(alertLevel int, time float64) bool {
-	if alertLevel < 0 {
-		panic("alertLevel must be positive")
-	}
-
+func MeetsThreshold(alertLevel uint, time float64) bool {
 	switch alertLevel {
 	case 0:
 		return time >= 30
@@ -19,11 +15,7 @@ func MeetsThreshold(alertLevel int, time float64) bool {
 	}
 }
 
-func GetAlertText(alertLevel int) string {
-	if alertLevel < 0 {
-		panic("alertLevel must be positive")
-	}
-
+func GetAlertText(alertLevel uint) string {
 	switch alertLevel {
 	case 0:
 		return "30秒"

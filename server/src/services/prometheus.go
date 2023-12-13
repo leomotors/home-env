@@ -15,6 +15,7 @@ func RegisterSensor(sensorId string, sensorName string) {
 
 	newSensor := &SensorManager{
 		name: sensorName,
+		id:   sensorId,
 		gauges: SensorGauge{
 			temperature: prometheus.NewGauge(prometheus.GaugeOpts{
 				Name:        "home_temperature",
@@ -49,4 +50,20 @@ func GetSensorManager(sensorId string) *SensorManager {
 
 func GetSensorValue(sensorId string) SensorValue {
 	return sensors[sensorId].values
+}
+
+func HealthCheck() {
+	for _, sensor := range sensors {
+		sensor.HealthCheck()
+	}
+}
+
+func GetAllSensorHealth() *map[string]bool {
+	status := make(map[string]bool)
+
+	for _, sensor := range sensors {
+		status[sensor.name] = sensor.values.healthStatus
+	}
+
+	return &status
 }

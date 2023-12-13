@@ -20,10 +20,11 @@ type SensorValue struct {
 
 type SensorManager struct {
 	name        string
+	id          string
 	gauges      SensorGauge
 	values      SensorValue
 	lastUpdated time.Time
-	alertLevel  int
+	alertLevel  uint
 }
 
 func (sensorManager *SensorManager) SetValue(temperature float64, humidity float64) {
@@ -38,6 +39,12 @@ func (sensorManager *SensorManager) SetValue(temperature float64, humidity float
 
 	sensorManager.lastUpdated = time.Now()
 
-	// TODO Manage alert level
-	sensorManager.alertLevel = 0
+	if sensorManager.alertLevel > 0 {
+		sensorManager.alertLevel = 0
+		SendBackNotice(sensorManager.id)
+	}
+}
+
+func (sensorManager *SensorManager) HealthCheck() {
+	// todo
 }
