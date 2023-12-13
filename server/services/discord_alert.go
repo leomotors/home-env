@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -22,7 +23,7 @@ func alertDiscord(msg string) {
 	// Serialize the JSON data
 	requestBody, err := json.Marshal(requestData)
 	if err != nil {
-		fmt.Println("[DISCORD ALERT] Error marshaling JSON:", err)
+		log.Println("[DISCORD ALERT] Error marshaling JSON:", err)
 		return
 	}
 
@@ -32,7 +33,7 @@ func alertDiscord(msg string) {
 	// Create a POST request with the JSON body
 	req, err := http.NewRequest("POST", apiUrl, bytes.NewBuffer(requestBody))
 	if err != nil {
-		fmt.Println("[DISCORD ALERT] Error creating request:", err)
+		log.Println("[DISCORD ALERT] Error creating request:", err)
 		return
 	}
 
@@ -45,26 +46,26 @@ func alertDiscord(msg string) {
 	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("[DISCORD ALERT] Error sending request:", err)
+		log.Println("[DISCORD ALERT] Error sending request:", err)
 		return
 	}
 	defer resp.Body.Close()
 
 	// Check the response status code
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("[DISCORD ALERT] Request failed with status code:", resp.StatusCode)
+		log.Println("[DISCORD ALERT] Request failed with status code:", resp.StatusCode)
 
 		var responseData map[string]interface{}
 		if err := json.NewDecoder(resp.Body).Decode(&responseData); err != nil {
-			fmt.Println("[DISCORD ALERT] Error decoding JSON response:", err)
+			log.Println("[DISCORD ALERT] Error decoding JSON response:", err)
 			return
 		}
 
-		fmt.Println("[DISCORD ALERT] Response:", responseData)
+		log.Println("[DISCORD ALERT] Response:", responseData)
 		return
 	}
 
-	fmt.Println("[DISCORD ALERT] Alert Success")
+	log.Println("[DISCORD ALERT] Alert Success")
 }
 
 var downAlertHeader = strings.Repeat("<:__mafuyuspook:1175812481373962331><:__kanadepolice:1184446548155838494>", 5)
