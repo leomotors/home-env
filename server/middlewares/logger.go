@@ -42,6 +42,10 @@ func Logger(next http.Handler) http.Handler {
 
 		next.ServeHTTP(recorder, r)
 
+		if path == "/metrics" && recorder.status == http.StatusOK {
+			return
+		}
+
 		log.Printf("%s %s %s %d (%s)", ip, method, path, recorder.status, utils.TruncateString(userAgent, 30))
 	})
 }
