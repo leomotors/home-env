@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/leomotors/home-env/src/services"
+	"github.com/leomotors/home-env/services"
 )
 
 func postHandler(w http.ResponseWriter, r *http.Request) {

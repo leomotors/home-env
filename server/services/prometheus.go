@@ -52,6 +52,7 @@ func GetSensorValue(sensorId string) SensorValue {
 	return sensors[sensorId].values
 }
 
+// Should be called every 5 seconds
 func HealthCheck() {
 	for _, sensor := range sensors {
 		sensor.HealthCheck()

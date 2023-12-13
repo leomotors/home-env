@@ -46,5 +46,15 @@ func (sensorManager *SensorManager) SetValue(temperature float64, humidity float
 }
 
 func (sensorManager *SensorManager) HealthCheck() {
-	// todo
+	idleTime := time.Since(sensorManager.lastUpdated).Seconds()
+
+	if idleTime >= 15 {
+		sensorManager.gauges.healthStatus.Set(0)
+		sensorManager.values.healthStatus = false
+	}
+
+	if MeetsThreshold(sensorManager.alertLevel, idleTime) {
+		SendDownAlert(sensorManager.id, sensorManager.alertLevel)
+		sensorManager.alertLevel++
+	}
 }

@@ -3,7 +3,7 @@ package services_test
 import (
 	"testing"
 
-	"github.com/leomotors/home-env/src/services"
+	"github.com/leomotors/home-env/services"
 	"github.com/stretchr/testify/assert"
 )
 
