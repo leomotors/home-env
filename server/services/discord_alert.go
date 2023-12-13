@@ -86,7 +86,7 @@ func SendDownAlert(sensorId string, alertThreshold uint) {
 ## Your 小O (ESP32) 名=%s does not do its job for %s!
 # CHECK IT NOW!
 如果您毫不犹豫、将从您的个人资料中扣除更多社会积分!!!
-%s`, downAlertHeader, sensorName, timeText, overallStatusText())
+# %s`, downAlertHeader, sensorName, timeText, overallStatusText())
 
 	go alertDiscord(alertText)
 }
@@ -103,7 +103,7 @@ func SendBackNotice(sensorId string) {
 ## Your 小O (ESP32) 名=%s is back to work!
 # You are a good citizen!
 没有共产党就没有新中国 没有共产党就没有新中国 !!!
-%s`, backNotiHeader, sensorName, overallStatusText())
+# %s`, backNotiHeader, sensorName, overallStatusText())
 
 	go alertDiscord(alertText)
 }
@@ -122,8 +122,8 @@ func overallStatusText() string {
 	statusTexts := make([]string, 0, len(*sensorHealth))
 
 	for id, value := range *sensorHealth {
-		statusTexts = append(statusTexts, fmt.Sprintf("%s %s", id, statusSymbol(value)))
+		statusTexts = append(statusTexts, fmt.Sprintf("[%s %s]", id, statusSymbol(value)))
 	}
 
-	return fmt.Sprintf("All Sensor Status: %s", strings.Join(statusTexts, " | "))
+	return fmt.Sprintf("All Sensor Status: %s", strings.Join(statusTexts, " "))
 }

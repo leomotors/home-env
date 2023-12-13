@@ -35,6 +35,8 @@ func TestMeetsThreshold(t *testing.T) {
 
 	assert.False(t, services.MeetsThreshold(4, 7199))
 	assert.True(t, services.MeetsThreshold(4, 7200))
+
+	assert.False(t, services.MeetsThreshold(^uint(0), 6942069420))
 }
 
 func TestGetAlertText(t *testing.T) {
