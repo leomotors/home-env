@@ -7,7 +7,7 @@ import (
 	"github.com/leomotors/home-env/services"
 )
 
-func postHandler(w http.ResponseWriter, r *http.Request) {
+func dataPostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -59,4 +59,4 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-var UpdatePostHandler = http.HandlerFunc(postHandler)
+var UpdatePostHandler = http.HandlerFunc(dataPostHandler)

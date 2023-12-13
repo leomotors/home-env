@@ -38,7 +38,7 @@ func Logger(next http.Handler) http.Handler {
 		path := r.URL.Path
 		userAgent := r.Header.Get("User-Agent")
 
-		recorder := &statusCodeRecorder{w, 0}
+		recorder := &statusCodeRecorder{w, http.StatusOK}
 
 		next.ServeHTTP(recorder, r)
 

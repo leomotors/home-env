@@ -27,6 +27,7 @@ func main() {
 	services.RegisterSensor(constants.LivingRoomId, "Living Room")
 
 	mux := http.NewServeMux()
+	mux.Handle("/", routes.IndexGetHandler)
 	mux.Handle("/data", routes.DataGetHandler)
 	mux.Handle("/metrics", routes.MetricsGetHandler)
 	mux.Handle("/update", routes.UpdatePostHandler)
