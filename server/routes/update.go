@@ -59,4 +59,4 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-var DataPostHandler = http.HandlerFunc(postHandler)
+var UpdatePostHandler = http.HandlerFunc(postHandler)

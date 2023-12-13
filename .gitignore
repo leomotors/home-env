@@ -1,2 +1,4 @@
 home/password.h
 server/home-env-server
+
+.env
