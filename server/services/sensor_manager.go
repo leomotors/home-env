@@ -1,6 +1,7 @@
 package services
 
 import (
+	"math"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -19,12 +20,59 @@ type SensorValue struct {
 }
 
 type SensorManager struct {
-	name        string
-	id          string
-	gauges      SensorGauge
-	values      SensorValue
-	lastUpdated time.Time
-	alertLevel  uint
+	name   string
+	id     string
+	gauges SensorGauge
+	values SensorValue
+
+	lastUpdated  time.Time
+	alertLevel   uint
+	alertCounter prometheus.Counter
+}
+
+func NewSensorManager(sensorId string, sensorName string) *SensorManager {
+	label := prometheus.Labels{
+		"sensorId": sensorId,
+	}
+
+	newSensor := &SensorManager{
+		name: sensorName,
+		id:   sensorId,
+		gauges: SensorGauge{
+			temperature: prometheus.NewGauge(prometheus.GaugeOpts{
+				Name:        "home_temperature",
+				Help:        "Current temperature in degrees Celsius.",
+				ConstLabels: label,
+			}),
+			humidity: prometheus.NewGauge(prometheus.GaugeOpts{
+				Name:        "home_humidity",
+				Help:        "Current humidity level as a percentage.",
+				ConstLabels: label,
+			}),
+			healthStatus: prometheus.NewGauge(prometheus.GaugeOpts{
+				Name:        "home_health_status",
+				Help:        "ESP32 is maintaining connection with server.",
+				ConstLabels: label,
+			}),
+		},
+		alertCounter: prometheus.NewCounter(prometheus.CounterOpts{
+			Name:        "home_health_alert_sent",
+			Help:        "Number of alerts sent to Discord",
+			ConstLabels: label,
+		}),
+	}
+
+	return newSensor
+}
+
+func (sensorManager *SensorManager) Register() {
+	prometheus.MustRegister(sensorManager.gauges.temperature)
+	prometheus.MustRegister(sensorManager.gauges.humidity)
+	prometheus.MustRegister(sensorManager.gauges.healthStatus)
+
+	prometheus.MustRegister(sensorManager.alertCounter)
+
+	sensorManager.SetValue(math.NaN(), math.NaN())
 }
 
 func (sensorManager *SensorManager) SetValue(temperature float64, humidity float64) {
@@ -55,6 +103,7 @@ func (sensorManager *SensorManager) HealthCheck() {
 
 	if MeetsThreshold(sensorManager.alertLevel, idleTime) {
 		SendDownAlert(sensorManager.id, sensorManager.alertLevel)
+		sensorManager.alertCounter.Inc()
 		sensorManager.alertLevel++
 	}
 }

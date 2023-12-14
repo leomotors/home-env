@@ -2,6 +2,13 @@
 
 Previous changelog before 1.7 will not be noted here.
 
+## [2.0.0] - 2023-??-??
+
+- refactor: restructure project to be much better
+- refactor: safer alert level
+- feat: support more than one sensor
+- misc improvements
+
 ## [1.7.0] - 2023-09-13
 
 - fix: Prometheus now set to NaN

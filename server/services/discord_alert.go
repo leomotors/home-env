@@ -83,7 +83,7 @@ func SendDownAlert(sensorId string, alertThreshold uint) {
 	alertText := fmt.Sprintf(
 		`# %s
 # :warning::warning::warning: 市民请注意! :warning::warning::warning:
-## Your 小O (ESP32) 名=%s does not do its job for %s!
+## Your 小O (ESP32) 名="%s" does not do its job for %s!
 # CHECK IT NOW!
 如果您毫不犹豫、将从您的个人资料中扣除更多社会积分!!!
 # %s`, downAlertHeader, sensorName, timeText, overallStatusText())
@@ -100,7 +100,7 @@ func SendBackNotice(sensorId string) {
 	alertText := fmt.Sprintf(
 		`# %s
 # :white_check_mark::white_check_mark::white_check_mark: 干得好公民! :white_check_mark::white_check_mark::white_check_mark:
-## Your 小O (ESP32) 名=%s is back to work!
+## Your 小O (ESP32) 名="%s" is back to work!
 # You are a good citizen!
 没有共产党就没有新中国 没有共产党就没有新中国 !!!
 # %s`, backNotiHeader, sensorName, overallStatusText())
