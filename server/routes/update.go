@@ -2,9 +2,17 @@ package routes
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 
 	"github.com/leomotors/home-env/services"
+)
+
+const (
+	tempUpperBound = 85
+	tempLowerBound = -40
+	humUpperBound  = 100
+	humLowerBound  = 0
 )
 
 func dataPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,13 +51,13 @@ func dataPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	temp, ok := data["temperature"].(float64)
-	if !ok {
+	if !ok || math.IsNaN(temp) || temp < tempLowerBound || temp > tempUpperBound {
 		http.Error(w, "Invalid temperature", http.StatusBadRequest)
 		return
 	}
 
 	hum, ok := data["humidity"].(float64)
-	if !ok {
+	if !ok || math.IsNaN(hum) || hum < humLowerBound || hum > humUpperBound {
 		http.Error(w, "Invalid humidity", http.StatusBadRequest)
 		return
 	}
