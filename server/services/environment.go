@@ -6,8 +6,6 @@ import (
 )
 
 type Secret struct {
-	PORT int
-
 	// Password for client to access this app
 	PASSWORD string
 
@@ -19,15 +17,6 @@ var secret = Secret{}
 var initialized = false
 
 func parseSecret() {
-	portStr := os.Getenv("PORT")
-	port, _ := strconv.Atoi(portStr)
-
-	if port > 0 && port < 65536 {
-		secret.PORT = port
-	} else {
-		secret.PORT = 8080
-	}
-
 	secret.PASSWORD = os.Getenv("PASSWORD")
 	if secret.PASSWORD == "" {
 		panic("PASSWORD environment variable not set.")

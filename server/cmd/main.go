@@ -21,8 +21,6 @@ func healthCheckLoop() {
 }
 
 func main() {
-	secret := services.GetSecret()
-
 	services.RegisterSensor(constants.MainRoomId, "Office Room")
 	services.RegisterSensor(constants.LivingRoomId, "Living Room")
 
@@ -36,6 +34,7 @@ func main() {
 
 	go healthCheckLoop()
 
-	fmt.Printf("Listening on port %d...\n", secret.PORT)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", secret.PORT), wrappedMux))
+	const PORT = 8939
+	fmt.Printf("Listening on port %d...\n", PORT)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", PORT), wrappedMux))
 }
