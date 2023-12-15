@@ -21,7 +21,8 @@ func TestSensorManager(t *testing.T) {
 	assert.NotNil(t, sensor.gauges.temperature)
 	assert.NotNil(t, sensor.gauges.humidity)
 	assert.NotNil(t, sensor.gauges.healthStatus)
-	assert.NotNil(t, sensor.alertCounter)
+	assert.NotNil(t, sensor.counters.alertSent)
+	assert.NotNil(t, sensor.counters.pingReceived)
 
 	sensor.Register()
 

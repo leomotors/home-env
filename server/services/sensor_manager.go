@@ -13,6 +13,11 @@ type SensorGauge struct {
 	healthStatus prometheus.Gauge
 }
 
+type SensorCounter struct {
+	alertSent    prometheus.Counter
+	pingReceived prometheus.Counter
+}
+
 type SensorValue struct {
 	temperature  float64
 	humidity     float64
@@ -20,14 +25,14 @@ type SensorValue struct {
 }
 
 type SensorManager struct {
-	name   string
-	id     string
-	gauges SensorGauge
-	values SensorValue
+	name     string
+	id       string
+	gauges   SensorGauge
+	counters SensorCounter
+	values   SensorValue
 
-	lastUpdated  time.Time
-	alertLevel   uint
-	alertCounter prometheus.Counter
+	lastUpdated time.Time
+	alertLevel  uint
 }
 
 func NewSensorManager(sensorId string, sensorName string) *SensorManager {
@@ -55,11 +60,18 @@ func NewSensorManager(sensorId string, sensorName string) *SensorManager {
 				ConstLabels: label,
 			}),
 		},
-		alertCounter: prometheus.NewCounter(prometheus.CounterOpts{
-			Name:        "home_health_alert_sent",
-			Help:        "Number of alerts sent to Discord",
-			ConstLabels: label,
-		}),
+		counters: SensorCounter{
+			alertSent: prometheus.NewCounter(prometheus.CounterOpts{
+				Name:        "home_health_alert_sent",
+				Help:        "Number of alerts sent to Discord",
+				ConstLabels: label,
+			}),
+			pingReceived: prometheus.NewCounter(prometheus.CounterOpts{
+				Name:        "home_ping_received",
+				Help:        "Number of ping received from this sensor",
+				ConstLabels: label,
+			}),
+		},
 	}
 
 	return newSensor
@@ -70,12 +82,17 @@ func (sensorManager *SensorManager) Register() {
 	prometheus.MustRegister(sensorManager.gauges.humidity)
 	prometheus.MustRegister(sensorManager.gauges.healthStatus)
 
-	prometheus.MustRegister(sensorManager.alertCounter)
+	prometheus.MustRegister(sensorManager.counters.alertSent)
+	prometheus.MustRegister(sensorManager.counters.pingReceived)
 
 	sensorManager.SetValue(math.NaN(), math.NaN())
 }
 
 func (sensorManager *SensorManager) SetValue(temperature float64, humidity float64) {
+	if !math.IsNaN(temperature) && !math.IsNaN(humidity) {
+		sensorManager.counters.pingReceived.Inc()
+	}
+
 	sensorManager.gauges.temperature.Set(temperature)
 	sensorManager.values.temperature = temperature
 
@@ -103,7 +120,7 @@ func (sensorManager *SensorManager) HealthCheck() {
 
 	if MeetsThreshold(sensorManager.alertLevel, idleTime) {
 		SendDownAlert(sensorManager.id, sensorManager.alertLevel)
-		sensorManager.alertCounter.Inc()
+		sensorManager.counters.alertSent.Inc()
 		sensorManager.alertLevel++
 	}
 }

@@ -34,7 +34,7 @@ func main() {
 
 	wrappedMux := middlewares.Logger(mux)
 
-	go loop()
+	// go loop()
 
 	fmt.Printf("Listening on port %d...\n", secret.PORT)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", secret.PORT), wrappedMux))
