@@ -1,29 +1,25 @@
-#include <Adafruit_AHTX0.h>
-#include <HTTPClient.h>
-#include <WiFi.h>
-#include <WiFiClientSecure.h>
-
-#include "password.h"
-
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASSWORD;
-const char* serverURL = SERVER_URL;
-const char* serverPassword = SERVER_PASSWORD;
-
-Adafruit_AHTX0 aht;
+#include "config/const.hpp"
+#include "config/password.hpp"
+#include "services/aht.cpp"
+#include "services/wifi.cpp"
 
 void setup() {
+    // Set pin mode for warning/check lights
+    pinMode(config::WIFI_LED_PIN, OUTPUT);
+    pinMode(config::AHT_LED_PIN, OUTPUT);
+    pinMode(config::SERVER_LED_PIN, OUTPUT);
+
+    // Turn on all warning/check lights, just like when starting car
+    digitalWrite(config::WIFI_LED_PIN, HIGH);
+    digitalWrite(config::AHT_LED_PIN, HIGH);
+    digitalWrite(config::SERVER_LED_PIN, HIGH);
+
     Serial.begin(115200);
-    Serial.println("Adafruit AHT10/AHT20 demo!");
+    Serial.println("Welcome to Home Environment Client!");
 
+    delay(1000);
     connectToWiFi();
-
-    if (!aht.begin()) {
-        Serial.println("Could not find AHT? Check wiring");
-        while (true) delay(10);
-    }
-
-    Serial.println("AHT10 or AHT20 found");
+    waitForAHT();
 }
 
 void loop() {
@@ -32,49 +28,11 @@ void loop() {
         connectToWiFi();
     }
 
-    sensors_event_t humidity, temp;
-    // populate temp and humidity objects with fresh data
-    aht.getEvent(&humidity, &temp);
-    Serial.print("Temperature: ");
-    Serial.print(temp.temperature);
-    Serial.println(" degrees C");
-    Serial.print("Humidity: ");
-    Serial.print(humidity.relative_humidity);
-    Serial.println("% rH");
+    auto [success, value] = readSensor();
 
-    updateData(humidity, temp);
+    if (success) {
+        updateData(value.first, value.second);
+    }
 
     delay(3000);
-}
-
-void connectToWiFi() {
-    Serial.println("Connecting to WiFi...");
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-    Serial.println("");
-    Serial.print("Connected to WiFi network with IP Address: ");
-    Serial.println(WiFi.localIP());
-}
-
-void updateData(sensors_event_t humidty, sensors_event_t temp) {
-    WiFiClient client;
-    HTTPClient http;
-
-    http.begin(client, serverURL);
-    http.addHeader("Content-Type", "application/json");
-    http.addHeader("Authorization", serverPassword);
-
-    String body = "{\"temperature\": " + String(temp.temperature) +
-                  ", \"humidity\": " + String(humidty.relative_humidity) + "}";
-
-    int responseCode = http.POST(body);
-
-    Serial.print("HTTP Response code: ");
-    Serial.println(responseCode);
-
-    // Free resources
-    http.end();
 }

@@ -1,4 +1,10 @@
-home/password.h
-server/home-env-server
-
+# Environment Variables
 .env
+password.hpp
+
+# Local Configuration
+.vscode
+
+# Build
+build
+server/home-env-server

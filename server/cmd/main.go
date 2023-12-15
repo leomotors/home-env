@@ -12,7 +12,7 @@ import (
 	"github.com/leomotors/home-env/services"
 )
 
-func loop() {
+func healthCheckLoop() {
 	for {
 		services.HealthCheck()
 
@@ -34,7 +34,7 @@ func main() {
 
 	wrappedMux := middlewares.Logger(mux)
 
-	// go loop()
+	go healthCheckLoop()
 
 	fmt.Printf("Listening on port %d...\n", secret.PORT)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", secret.PORT), wrappedMux))
