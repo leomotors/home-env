@@ -27,7 +27,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/", routes.IndexGetHandler)
 	mux.Handle("/data", routes.DataGetHandler)
-	mux.Handle("/metrics", routes.MetricsGetHandler)
+	mux.Handle("/metrics", routes.MetricsHandler)
 	mux.Handle("/update", routes.UpdatePostHandler)
 
 	wrappedMux := middlewares.Logger(mux)

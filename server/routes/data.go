@@ -8,7 +8,7 @@ import (
 	"github.com/leomotors/home-env/services"
 )
 
-func dataGetHandler(w http.ResponseWriter, r *http.Request) {
+func publicDataGetHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -28,4 +28,4 @@ func dataGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var DataGetHandler = http.HandlerFunc(dataGetHandler)
+var DataGetHandler = http.HandlerFunc(publicDataGetHandler)

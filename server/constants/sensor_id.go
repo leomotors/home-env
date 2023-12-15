@@ -1,4 +1,6 @@
 package constants
 
-const MainRoomId = "main_room"
-const LivingRoomId = "living_room"
+const (
+	MainRoomId   = "main_room"
+	LivingRoomId = "living_room"
+)

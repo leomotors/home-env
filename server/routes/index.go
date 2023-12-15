@@ -10,7 +10,7 @@ import (
 	"github.com/leomotors/home-env/services"
 )
 
-func indexGetHandler(w http.ResponseWriter, r *http.Request) {
+func indexRenderHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -46,4 +46,4 @@ func indexGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(replacedHTML))
 }
 
-var IndexGetHandler = http.HandlerFunc(indexGetHandler)
+var IndexGetHandler = http.HandlerFunc(indexRenderHandler)

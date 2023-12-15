@@ -15,7 +15,7 @@ const (
 	humLowerBound  = 0
 )
 
-func dataPostHandler(w http.ResponseWriter, r *http.Request) {
+func dataUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -67,4 +67,4 @@ func dataPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-var UpdatePostHandler = http.HandlerFunc(dataPostHandler)
+var UpdatePostHandler = http.HandlerFunc(dataUpdateHandler)
