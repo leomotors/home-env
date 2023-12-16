@@ -23,7 +23,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ![](./images/stack.webp)
 
-## Feature
+### Version 2 Hardware
+
+![](./images/board.webp)
+
+## Discord Alert Feature
 
 Alert when ESP32 is not sending data
 
@@ -34,3 +38,7 @@ Alert when ESP32 is not sending data
 ### Version 2 Canary
 
 ![](./images/discord-alert-v2.webp)
+
+### Version 2
+
+![](./images/discord-alert-v2-2.webp)
