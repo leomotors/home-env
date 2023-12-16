@@ -1,6 +1,7 @@
 # Environment Variables
 .env
-password.hpp
+password.*
+!password.template.hpp
 
 # Local Configuration
 .vscode
