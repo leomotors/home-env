@@ -1,3 +1,7 @@
+# MacOS
+.DS_Store
+__MACOSX
+
 # Environment Variables
 .env
 password.*
