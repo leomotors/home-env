@@ -2,7 +2,7 @@
 
 Previous changelog before 1.7 will not be noted here.
 
-## [2.0.0] - 2023-??-??
+## [2.0.0] - 2023-12-16
 
 - refactor: restructure project to be much better
 - refactor: safer alert level
