@@ -25,7 +25,16 @@ func main() {
 	services.RegisterSensor(constants.LivingRoomId, "Living Room")
 
 	mux := http.NewServeMux()
-	mux.Handle("/", routes.IndexGetHandler)
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+
+		routes.IndexGetHandler.ServeHTTP(w, r)
+	})
+
 	mux.Handle("/data", routes.DataGetHandler)
 	mux.Handle("/metrics", routes.MetricsHandler)
 	mux.Handle("/update", routes.UpdatePostHandler)
