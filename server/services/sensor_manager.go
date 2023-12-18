@@ -88,6 +88,7 @@ func (sensorManager *SensorManager) Register() {
 	sensorManager.SetValue(math.NaN(), math.NaN())
 }
 
+// Set prometheus metric values, this also set HealthStatus to true
 func (sensorManager *SensorManager) SetValue(temperature float64, humidity float64) {
 	if !math.IsNaN(temperature) && !math.IsNaN(humidity) {
 		sensorManager.counters.pingReceived.Inc()
@@ -110,12 +111,19 @@ func (sensorManager *SensorManager) SetValue(temperature float64, humidity float
 	}
 }
 
+// Check sensor idle, if it is not updated for too long, set value to NaN
+// and HealthStatus to false, and send Discord Alert after a period of time
 func (sensorManager *SensorManager) HealthCheck() {
 	idleTime := time.Since(sensorManager.lastUpdated).Seconds()
 
 	if idleTime >= 15 {
 		sensorManager.gauges.healthStatus.Set(0)
 		sensorManager.values.healthStatus = false
+
+		sensorManager.gauges.temperature.Set(math.NaN())
+		sensorManager.values.temperature = math.NaN()
+		sensorManager.gauges.humidity.Set(math.NaN())
+		sensorManager.values.humidity = math.NaN()
 	}
 
 	if MeetsThreshold(sensorManager.alertLevel, idleTime) {

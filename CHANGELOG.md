@@ -2,6 +2,10 @@
 
 Previous changelog before 1.7 will not be noted here.
 
+## [2.1.0] - 2023-12-18
+
+- fix: set to NaN when sensor down
+
 ## [2.0.0] - 2023-12-16
 
 - refactor: restructure project to be much better
