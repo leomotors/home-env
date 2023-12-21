@@ -2,6 +2,10 @@
 
 Previous changelog before 1.7 will not be noted here.
 
+## [2.2.1] - 2023-12-21
+
+- feat: add arm64 docker image
+
 ## [2.2.0] - 2023-12-18
 
 - server: handle 404
