@@ -2,6 +2,10 @@
 
 Previous changelog before 1.7 will not be noted here.
 
+## [2.3.0] - 2023-12-23
+
+- feat: only allow local ip in some path for system that don't use nginx
+
 ## [2.2.1] - 2023-12-21
 
 - feat: add arm64 docker image

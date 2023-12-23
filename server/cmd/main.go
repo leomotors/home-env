@@ -36,8 +36,8 @@ func main() {
 	})
 
 	mux.Handle("/data", routes.DataGetHandler)
-	mux.Handle("/metrics", routes.MetricsHandler)
-	mux.Handle("/update", routes.UpdatePostHandler)
+	mux.Handle("/metrics", middlewares.LocalOnly(routes.MetricsHandler))
+	mux.Handle("/update", middlewares.LocalOnly(routes.UpdatePostHandler))
 
 	wrappedMux := middlewares.Logger(mux)
 
