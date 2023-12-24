@@ -2,6 +2,10 @@
 
 Previous changelog before 1.7 will not be noted here.
 
+## [2.4.0] - 2023-12-24
+
+- feat: don't put uptime kuma into logs
+
 ## [2.3.0] - 2023-12-23
 
 - feat: only allow local ip in some path for system that don't use nginx

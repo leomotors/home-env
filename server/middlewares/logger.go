@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/leomotors/home-env/services"
 	"github.com/leomotors/home-env/utils"
 )
 
@@ -42,12 +43,24 @@ func Logger(next http.Handler) http.Handler {
 
 		next.ServeHTTP(recorder, r)
 
+		if path == "/update" && recorder.status == http.StatusAccepted {
+			return
+		}
+
 		if path == "/metrics" && recorder.status == http.StatusOK {
 			return
 		}
 
-		if path == "/update" && recorder.status == http.StatusAccepted {
-			return
+		if len(userAgent) >= 12 && userAgent[0:12] == "Uptime-Kuma/" && recorder.status == http.StatusOK {
+			secret := services.GetSecret()
+			expectedPassword := secret.PASSWORD
+			providedPassword := r.Header.Get("Authorization")
+
+			if providedPassword == expectedPassword {
+				return
+			} else {
+				log.Println("Wild 熊ベア appeared!")
+			}
 		}
 
 		log.Printf("%s %s %s %d (%s)", ip, method, path, recorder.status, utils.TruncateString(userAgent, 30))
