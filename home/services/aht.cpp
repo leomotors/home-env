@@ -1,5 +1,7 @@
 #include <Adafruit_AHTX0.h>
 
+#include "../config/const.hpp"
+#include "../config/password.hpp"
 #include "../lib/pair.hpp"
 
 Adafruit_AHTX0 aht;

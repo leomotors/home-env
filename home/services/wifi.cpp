@@ -1,3 +1,4 @@
+#include <Adafruit_AHTX0.h>
 #include <HTTPClient.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
