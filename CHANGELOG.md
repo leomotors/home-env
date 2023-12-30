@@ -1,6 +1,8 @@
-# Changelog
+# Changelog for Go Server
 
 Previous changelog before 1.7 will not be noted here.
+
+This changelog is for the server only.
 
 ## [2.4.0] - 2023-12-24
 

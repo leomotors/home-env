@@ -27,7 +27,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Previous Stack
 
+<details>
+<summary>Version 1</summary>
+
 ![](./images/stack.webp)
+
+</details>
 
 ### Version 2 Hardware
 
