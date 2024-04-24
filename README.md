@@ -23,7 +23,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### On Premise (Current)
 
-![](./images/stackv2.webp)
+![](./images/stackv2vlogo.webp)
+
+(Logo from https://github.com/SAWARATSUKI/ServiceLogos)
 
 ### Previous Stack
 
