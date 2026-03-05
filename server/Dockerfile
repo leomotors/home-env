@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine3.19 as builder
+FROM golang:1.23-alpine3.21 AS builder
 
 # Set destination for COPY
 WORKDIR /app
@@ -10,17 +10,15 @@ RUN go mod download
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./home-env-server ./cmd/main.go
 
-FROM alpine:3.19 AS runner
+FROM alpine:3.21 AS runner
 
-LABEL name "home-env-server"
+LABEL name="home-env-server"
 
 WORKDIR /app
 USER guest
 
 # Copy built executable
 COPY --chown=guest:guest --from=builder /app/home-env-server ./
-# Assets
-COPY --chown=guest:guest public ./public
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.

@@ -17,13 +17,6 @@ func TestSensorManager(t *testing.T) {
 	assert.Equal(t, "testid", sensor.id)
 	assert.Equal(t, "testname", sensor.name)
 
-	// Check gauges not nil
-	assert.NotNil(t, sensor.gauges.temperature)
-	assert.NotNil(t, sensor.gauges.humidity)
-	assert.NotNil(t, sensor.gauges.healthStatus)
-	assert.NotNil(t, sensor.counters.alertSent)
-	assert.NotNil(t, sensor.counters.pingReceived)
-
 	sensor.Register()
 
 	// Check initial values

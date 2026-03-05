@@ -3,20 +3,7 @@ package services
 import (
 	"math"
 	"time"
-
-	"github.com/prometheus/client_golang/prometheus"
 )
-
-type SensorGauge struct {
-	temperature  prometheus.Gauge
-	humidity     prometheus.Gauge
-	healthStatus prometheus.Gauge
-}
-
-type SensorCounter struct {
-	alertSent    prometheus.Counter
-	pingReceived prometheus.Counter
-}
 
 type SensorValue struct {
 	temperature  float64
@@ -25,110 +12,63 @@ type SensorValue struct {
 }
 
 type SensorManager struct {
-	name     string
-	id       string
-	gauges   SensorGauge
-	counters SensorCounter
-	values   SensorValue
+	name string
+	id   string
+
+	values SensorValue
 
 	lastUpdated time.Time
 	alertLevel  uint
 }
 
 func NewSensorManager(sensorId string, sensorName string) *SensorManager {
-	label := prometheus.Labels{
-		"sensorId": sensorId,
-	}
-
-	newSensor := &SensorManager{
+	return &SensorManager{
 		name: sensorName,
 		id:   sensorId,
-		gauges: SensorGauge{
-			temperature: prometheus.NewGauge(prometheus.GaugeOpts{
-				Name:        "home_temperature",
-				Help:        "Current temperature in degrees Celsius.",
-				ConstLabels: label,
-			}),
-			humidity: prometheus.NewGauge(prometheus.GaugeOpts{
-				Name:        "home_humidity",
-				Help:        "Current humidity level as a percentage.",
-				ConstLabels: label,
-			}),
-			healthStatus: prometheus.NewGauge(prometheus.GaugeOpts{
-				Name:        "home_health_status",
-				Help:        "ESP32 is maintaining connection with server.",
-				ConstLabels: label,
-			}),
-		},
-		counters: SensorCounter{
-			alertSent: prometheus.NewCounter(prometheus.CounterOpts{
-				Name:        "home_health_alert_sent",
-				Help:        "Number of alerts sent to Discord",
-				ConstLabels: label,
-			}),
-			pingReceived: prometheus.NewCounter(prometheus.CounterOpts{
-				Name:        "home_ping_received",
-				Help:        "Number of ping received from this sensor",
-				ConstLabels: label,
-			}),
-		},
 	}
-
-	return newSensor
 }
 
 func (sensorManager *SensorManager) Register() {
-	prometheus.MustRegister(sensorManager.gauges.temperature)
-	prometheus.MustRegister(sensorManager.gauges.humidity)
-	prometheus.MustRegister(sensorManager.gauges.healthStatus)
-
-	prometheus.MustRegister(sensorManager.counters.alertSent)
-	prometheus.MustRegister(sensorManager.counters.pingReceived)
-
-	sensorManager.SetValue(math.NaN(), math.NaN())
+	sensorManager.values.temperature = math.NaN()
+	sensorManager.values.humidity = math.NaN()
+	sensorManager.values.healthStatus = true
+	sensorManager.lastUpdated = time.Now()
 }
 
-// Set prometheus metric values, this also set HealthStatus to true
+// SetValue updates sensor readings, pushes to TimescaleDB, and resets health status
 func (sensorManager *SensorManager) SetValue(temperature float64, humidity float64) {
-	if !math.IsNaN(temperature) && !math.IsNaN(humidity) {
-		sensorManager.counters.pingReceived.Inc()
-	}
-
-	sensorManager.gauges.temperature.Set(temperature)
 	sensorManager.values.temperature = temperature
-
-	sensorManager.gauges.humidity.Set(humidity)
 	sensorManager.values.humidity = humidity
-
-	sensorManager.gauges.healthStatus.Set(1)
 	sensorManager.values.healthStatus = true
-
 	sensorManager.lastUpdated = time.Now()
 
+	if !math.IsNaN(temperature) && !math.IsNaN(humidity) {
+		go InsertReading(sensorManager.id, temperature, humidity)
+	}
+
 	if sensorManager.alertLevel > 0 {
+		go InsertDowntimeEvent(sensorManager.id, "resolved")
 		sensorManager.alertLevel = 0
 		SendBackNotice(sensorManager.id)
 	}
 }
 
-// Check sensor idle, if it is not updated for too long, set value to NaN
-// and HealthStatus to false, and send Discord Alert after a period of time
+// HealthCheck checks sensor idle time, marks offline after 15s,
+// and sends Discord alerts with escalating thresholds
 func (sensorManager *SensorManager) HealthCheck() {
 	idleTime := time.Since(sensorManager.lastUpdated).Seconds()
 
 	if idleTime >= 15 {
-		sensorManager.gauges.healthStatus.Set(0)
 		sensorManager.values.healthStatus = false
-
-		sensorManager.gauges.temperature.Set(math.NaN())
 		sensorManager.values.temperature = math.NaN()
-		sensorManager.gauges.humidity.Set(math.NaN())
 		sensorManager.values.humidity = math.NaN()
 	}
 
 	if MeetsThreshold(sensorManager.alertLevel, idleTime) {
+		if sensorManager.alertLevel == 0 {
+			go InsertDowntimeEvent(sensorManager.id, "down")
+		}
 		SendDownAlert(sensorManager.id, sensorManager.alertLevel)
-		sensorManager.counters.alertSent.Inc()
 		sensorManager.alertLevel++
 	}
 }

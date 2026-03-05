@@ -1,0 +1,82 @@
+basePath: /
+definitions:
+  routes.DataResponse:
+    properties:
+      humidity:
+        example: 48.2
+        type: number
+      lastUpdated:
+        example: 2.14
+        type: number
+      temperature:
+        example: 25.5
+        type: number
+    required:
+    - humidity
+    - lastUpdated
+    - temperature
+    type: object
+  routes.UpdateRequest:
+    properties:
+      humidity:
+        example: 50
+        type: number
+      sensorId:
+        example: main_room
+        type: string
+      temperature:
+        example: 24.5
+        type: number
+    required:
+    - humidity
+    - sensorId
+    - temperature
+    type: object
+host: localhost:8939
+info:
+  contact: {}
+  description: Home environment sensor monitoring API
+  title: Home Env API
+  version: 3.0.0
+paths:
+  /data:
+    get:
+      description: Returns the latest temperature and humidity reading from the main
+        room sensor
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/routes.DataResponse'
+      summary: Get current sensor data
+  /update:
+    post:
+      consumes:
+      - application/json
+      description: Receives temperature and humidity data from an ESP32 sensor. Local
+        network only.
+      parameters:
+      - description: Password for authentication
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Sensor reading data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/routes.UpdateRequest'
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Invalid request body or values out of range
+        "401":
+          description: Unauthorized
+        "404":
+          description: Sensor not found
+      summary: Update sensor data
+swagger: "2.0"

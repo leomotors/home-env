@@ -3,10 +3,10 @@ package routes
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/leomotors/home-env/constants"
+	"github.com/leomotors/home-env/public"
 	"github.com/leomotors/home-env/services"
 )
 
@@ -18,16 +18,8 @@ func indexRenderHandler(w http.ResponseWriter, r *http.Request) {
 
 	sensorValue := services.GetSensorValue(constants.MainRoomId)
 
-	htmlContent, err := os.ReadFile("public/index.html")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	htmlString := string(htmlContent)
-
 	replacedHTML := strings.Replace(
-		htmlString,
+		public.IndexHTML,
 		"{{ TEMPERATURE }}",
 		fmt.Sprintf("%.2f", sensorValue.Temperature), -1)
 	replacedHTML = strings.Replace(

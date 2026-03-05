@@ -15,6 +15,23 @@ const (
 	humLowerBound  = 0
 )
 
+// UpdateRequest represents the request body for POST /update
+type UpdateRequest struct {
+	SensorID    string  `json:"sensorId" example:"main_room" validate:"required"`
+	Temperature float64 `json:"temperature" example:"24.50" validate:"required"`
+	Humidity    float64 `json:"humidity" example:"50.00" validate:"required"`
+}
+
+// @Summary		Update sensor data
+// @Description	Receives temperature and humidity data from an ESP32 sensor. Local network only.
+// @Accept			json
+// @Param			Authorization	header	string			true	"Password for authentication"
+// @Param			body			body	UpdateRequest	true	"Sensor reading data"
+// @Success		202				"Accepted"
+// @Failure		400				"Invalid request body or values out of range"
+// @Failure		401				"Unauthorized"
+// @Failure		404				"Sensor not found"
+// @Router			/update [post]
 func dataUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

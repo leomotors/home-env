@@ -47,10 +47,6 @@ func Logger(next http.Handler) http.Handler {
 			return
 		}
 
-		if path == "/metrics" && recorder.status == http.StatusOK {
-			return
-		}
-
 		if len(userAgent) >= 12 && userAgent[0:12] == "Uptime-Kuma/" && recorder.status == http.StatusOK {
 			secret := services.GetSecret()
 			expectedPassword := secret.PASSWORD

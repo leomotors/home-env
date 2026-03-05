@@ -7,6 +7,10 @@ import (
 )
 
 func isLocalIP(ip string) bool {
+	if ip[0:5] == "[::1]" {
+		return true
+	}
+
 	if ip[0:7] == "192.168" || ip[0:3] == "10." {
 		return true
 	}

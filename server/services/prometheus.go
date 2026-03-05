@@ -17,6 +17,7 @@ func GetSensorManager(sensorId string) *SensorManager {
 	return sensors[sensorId]
 }
 
+// PublicSensorValue is the public-facing sensor data
 type PublicSensorValue struct {
 	Temperature float64
 	Humidity    float64

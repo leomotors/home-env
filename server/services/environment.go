@@ -11,6 +11,8 @@ type Secret struct {
 
 	DISCORD_TOKEN      string
 	DISCORD_CHANNEL_ID uint64
+
+	DATABASE_URL string
 }
 
 var secret = Secret{}
@@ -35,6 +37,11 @@ func parseSecret() {
 	}
 
 	secret.DISCORD_CHANNEL_ID = channelID
+
+	secret.DATABASE_URL = os.Getenv("DATABASE_URL")
+	if secret.DATABASE_URL == "" {
+		panic("DATABASE_URL environment variable not set.")
+	}
 
 	initialized = true
 }

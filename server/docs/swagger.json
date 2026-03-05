@@ -1,0 +1,117 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Home environment sensor monitoring API",
+        "title": "Home Env API",
+        "contact": {},
+        "version": "3.0.0"
+    },
+    "host": "localhost:8939",
+    "basePath": "/",
+    "paths": {
+        "/data": {
+            "get": {
+                "description": "Returns the latest temperature and humidity reading from the main room sensor",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get current sensor data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/routes.DataResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/update": {
+            "post": {
+                "description": "Receives temperature and humidity data from an ESP32 sensor. Local network only.",
+                "consumes": [
+                    "application/json"
+                ],
+                "summary": "Update sensor data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Password for authentication",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Sensor reading data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/routes.UpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "description": "Invalid request body or values out of range"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "404": {
+                        "description": "Sensor not found"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "routes.DataResponse": {
+            "type": "object",
+            "required": [
+                "humidity",
+                "lastUpdated",
+                "temperature"
+            ],
+            "properties": {
+                "humidity": {
+                    "type": "number",
+                    "example": 48.2
+                },
+                "lastUpdated": {
+                    "type": "number",
+                    "example": 2.14
+                },
+                "temperature": {
+                    "type": "number",
+                    "example": 25.5
+                }
+            }
+        },
+        "routes.UpdateRequest": {
+            "type": "object",
+            "required": [
+                "humidity",
+                "sensorId",
+                "temperature"
+            ],
+            "properties": {
+                "humidity": {
+                    "type": "number",
+                    "example": 50
+                },
+                "sensorId": {
+                    "type": "string",
+                    "example": "main_room"
+                },
+                "temperature": {
+                    "type": "number",
+                    "example": 24.5
+                }
+            }
+        }
+    }
+}

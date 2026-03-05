@@ -13,3 +13,6 @@ password.*
 # Build
 build
 server/home-env-server
+
+# Temp
+home-env
