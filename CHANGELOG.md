@@ -4,6 +4,22 @@ Previous changelog before 1.7 will not be noted here.
 
 This changelog is for the server only.
 
+## [3.1.0] - 2026-03-09
+
+### Breaking Changes
+
+- **`/data` response shape changed** — endpoint now returns all sensors as `{"sensors": [...]}` instead of a single sensor's `{temperature, humidity, lastUpdated}`
+
+### Added
+
+- **Multi-sensor `/data` endpoint** — returns an array of all registered sensors, each with `id`, `name`, `temperature`, `humidity`, `lastUpdated`, and `online` fields
+- **`GetAllSensors()` service function** — iterates all registered sensors and returns public details
+
+### Changed
+
+- **Index page redesigned** — dark-themed responsive UI showing all rooms as cards with online/offline badges; no external CSS dependencies
+- **Server-side template rendering removed** — `index.html` is served as static HTML; all data is fetched client-side via `/data`
+
 ## [3.0.0] - 2026-03-05
 
 ### Breaking Changes

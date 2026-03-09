@@ -1,77 +1,235 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Environments</title>
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: Arial, sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      header {
         text-align: center;
+        margin-bottom: 2.5rem;
       }
 
-      .weather-info {
+      header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: #f8fafc;
+      }
+
+      header p {
+        color: #94a3b8;
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .rooms {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 1.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .room-card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: border-color 0.2s;
+      }
+
+      .room-card:hover {
+        border-color: #475569;
+      }
+
+      .room-header {
         display: flex;
-        justify-content: center;
-        margin-top: 20px;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
       }
 
-      .weather-card {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        width: 150px;
-        margin: 3rem;
+      .room-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #f1f5f9;
       }
 
-      .weather-icon {
-        font-size: 48px;
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
 
-      h2 {
-        margin-top: 10px;
+      .status-badge.online {
+        background: #064e3b;
+        color: #6ee7b7;
       }
 
-      p {
-        font-size: 24px;
-        font-weight: bold;
+      .status-badge.offline {
+        background: #7f1d1d;
+        color: #fca5a5;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .status-badge.online .status-dot {
+        background: #34d399;
+      }
+
+      .status-badge.offline .status-dot {
+        background: #f87171;
+      }
+
+      .readings {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .reading {
+        background: #0f172a;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+
+      .reading-label {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .reading-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #f8fafc;
+      }
+
+      .reading-value .unit {
+        font-size: 1rem;
+        color: #64748b;
+        font-weight: 400;
+      }
+
+      .room-footer {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #64748b;
+        text-align: right;
+      }
+
+      .loading {
+        text-align: center;
+        color: #64748b;
+        padding: 3rem;
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 1rem;
+        }
+
+        .rooms {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>Home Environments</h1>
-    <p id="last-updated">Last Updated: {{ LAST_UPDATED }} seconds ago</p>
-    <div class="weather-info">
-      <div class="weather-card">
-        <i class="material-icons weather-icon">thermostat</i>
-        <h2>Temperature</h2>
-        <p id="temperature">{{ TEMPERATURE }} °C</p>
-      </div>
-      <div class="weather-card">
-        <i class="material-icons weather-icon">opacity</i>
-        <h2>Humidity</h2>
-        <p id="humidity">{{ HUMIDITY }}%</p>
-      </div>
+    <header>
+      <h1>Home Environments</h1>
+      <p>Real-time sensor monitoring</p>
+    </header>
+
+    <div id="rooms" class="rooms">
+      <div class="loading">Loading sensor data&hellip;</div>
     </div>
 
     <script type="module">
-      async function update() {
-        const obj = await fetch("/data").then((r) => r.json());
+      const container = document.getElementById("rooms");
 
-        const { temperature, humidity, lastUpdated } = obj;
-
-        document.getElementById(
-          "temperature"
-        ).textContent = `${temperature} °C`;
-        document.getElementById("humidity").textContent = `${humidity}%`;
-        document.getElementById(
-          "last-updated"
-        ).textContent = `Last Updated: ${lastUpdated.toFixed(2)} seconds ago`;
+      function formatLastUpdated(seconds) {
+        if (seconds < 60) return `${seconds.toFixed(0)}s ago`;
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        return `${Math.floor(seconds / 3600)}h ago`;
       }
 
+      function renderSensors(sensors) {
+        container.innerHTML = sensors
+          .map(
+            (s) => `
+          <div class="room-card">
+            <div class="room-header">
+              <span class="room-name">${s.name}</span>
+              <span class="status-badge ${s.online ? "online" : "offline"}">
+                <span class="status-dot"></span>
+                ${s.online ? "Online" : "Offline"}
+              </span>
+            </div>
+            <div class="readings">
+              <div class="reading">
+                <div class="reading-label">Temperature</div>
+                <div class="reading-value">
+                  ${s.online ? s.temperature.toFixed(1) : "&mdash;"}
+                  <span class="unit">&deg;C</span>
+                </div>
+              </div>
+              <div class="reading">
+                <div class="reading-label">Humidity</div>
+                <div class="reading-value">
+                  ${s.online ? s.humidity.toFixed(1) : "&mdash;"}
+                  <span class="unit">%</span>
+                </div>
+              </div>
+            </div>
+            <div class="room-footer">
+              Updated ${formatLastUpdated(s.lastUpdated)}
+            </div>
+          </div>
+        `,
+          )
+          .join("");
+      }
+
+      async function update() {
+        try {
+          const { sensors } = await fetch("/data").then((r) => r.json());
+          renderSensors(sensors);
+        } catch (e) {
+          console.error("Failed to fetch sensor data", e);
+        }
+      }
+
+      update();
       setInterval(update, 3500);
     </script>
   </body>

@@ -2,19 +2,38 @@ basePath: /
 definitions:
   DataResponse:
     properties:
+      sensors:
+        items:
+          $ref: '#/definitions/SensorDetail'
+        type: array
+    required:
+    - sensors
+    type: object
+  SensorDetail:
+    properties:
       humidity:
         example: 48.2
         type: number
+      id:
+        example: main_room
+        type: string
       lastUpdated:
         example: 2.14
         type: number
+      name:
+        example: Office Room
+        type: string
+      online:
+        example: true
+        type: boolean
       temperature:
         example: 25.5
         type: number
     required:
-    - humidity
+    - id
     - lastUpdated
-    - temperature
+    - name
+    - online
     type: object
   UpdateRequest:
     properties:
@@ -41,8 +60,7 @@ info:
 paths:
   /data:
     get:
-      description: Returns the latest temperature and humidity reading from the main
-        room sensor
+      description: Returns the latest temperature and humidity readings from all sensors
       produces:
       - application/json
       responses:
@@ -50,7 +68,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/DataResponse'
-      summary: Get current sensor data
+      summary: Get all sensor data
   /update:
     post:
       consumes:

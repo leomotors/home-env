@@ -11,11 +11,11 @@
     "paths": {
         "/data": {
             "get": {
-                "description": "Returns the latest temperature and humidity reading from the main room sensor",
+                "description": "Returns the latest temperature and humidity readings from all sensors",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get current sensor data",
+                "summary": "Get all sensor data",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -72,18 +72,45 @@
         "DataResponse": {
             "type": "object",
             "required": [
-                "humidity",
+                "sensors"
+            ],
+            "properties": {
+                "sensors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SensorDetail"
+                    }
+                }
+            }
+        },
+        "SensorDetail": {
+            "type": "object",
+            "required": [
+                "id",
                 "lastUpdated",
-                "temperature"
+                "name",
+                "online"
             ],
             "properties": {
                 "humidity": {
                     "type": "number",
                     "example": 48.2
                 },
+                "id": {
+                    "type": "string",
+                    "example": "main_room"
+                },
                 "lastUpdated": {
                     "type": "number",
                     "example": 2.14
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Office Room"
+                },
+                "online": {
+                    "type": "boolean",
+                    "example": true
                 },
                 "temperature": {
                     "type": "number",

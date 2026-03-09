@@ -1,22 +1,29 @@
 package routes
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 
-	"github.com/leomotors/home-env/constants"
 	"github.com/leomotors/home-env/services"
 )
 
+// SensorDetail represents one sensor's data in the response
+type SensorDetail struct {
+	Id          string   `json:"id" example:"main_room" validate:"required"`
+	Name        string   `json:"name" example:"Office Room" validate:"required"`
+	Temperature *float64 `json:"temperature" example:"25.50"`
+	Humidity    *float64 `json:"humidity" example:"48.20"`
+	LastUpdated float64  `json:"lastUpdated" example:"2.14" validate:"required"`
+	Online      bool     `json:"online" example:"true" validate:"required"`
+} //	@name	SensorDetail
+
 // DataResponse represents the response for GET /data
 type DataResponse struct {
-	Temperature float64 `json:"temperature" example:"25.50" validate:"required"`
-	Humidity    float64 `json:"humidity" example:"48.20" validate:"required"`
-	LastUpdated float64 `json:"lastUpdated" example:"2.14" validate:"required"`
+	Sensors []SensorDetail `json:"sensors" validate:"required"`
 } //	@name	DataResponse
 
-// @Summary		Get current sensor data
-// @Description	Returns the latest temperature and humidity reading from the main room sensor
+// @Summary		Get all sensor data
+// @Description	Returns the latest temperature and humidity readings from all sensors
 // @Produce		json
 // @Success		200	{object}	DataResponse
 // @Router			/data [get]
@@ -26,15 +33,10 @@ func publicDataGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sensorValue := services.GetSensorValue(constants.MainRoomId)
-
-	data := fmt.Sprintf(
-		`{"temperature": %.2f, "humidity": %.2f, "lastUpdated": %.2f}`,
-		sensorValue.Temperature, sensorValue.Humidity, sensorValue.LastUpdated)
+	allSensors := services.GetAllSensors()
 
 	w.Header().Set("Content-Type", "application/json")
-	_, err := w.Write([]byte(data))
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{"sensors": allSensors}); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
