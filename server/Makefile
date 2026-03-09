@@ -20,7 +20,7 @@ test:
 lint:
 	go vet ./...
 
-fmt:
+format:
 	gofmt -w .
 	go run github.com/swaggo/swag/cmd/swag@latest fmt
 

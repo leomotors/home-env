@@ -14,7 +14,7 @@ import (
 )
 
 //	@title			Home Env API
-//	@version		3.0.0
+//	@version		3.1.0
 //	@description	Home environment sensor monitoring API
 //	@host			localhost:8939
 //	@BasePath		/
@@ -67,6 +67,15 @@ func main() {
 	go healthCheckLoop()
 
 	const PORT = 8939
-	fmt.Printf("Listening on port %d...\n", PORT)
+	baseURL := fmt.Sprintf("http://localhost:%d", PORT)
+	indexURL := baseURL
+	docsURL := fmt.Sprintf("%s/scalar", baseURL)
+
+	const bold = "\033[1m"
+	const reset = "\033[0m"
+
+	fmt.Printf("\n🚀 Home Env server is up and running!\n")
+	fmt.Printf("- Index page: %s%s%s\n", bold, indexURL, reset)
+	fmt.Printf("- Docs page:  %s%s%s\n\n", bold, docsURL, reset)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", PORT), wrappedMux))
 }

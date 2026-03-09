@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  routes.DataResponse:
+  DataResponse:
     properties:
       humidity:
         example: 48.2
@@ -16,7 +16,7 @@ definitions:
     - lastUpdated
     - temperature
     type: object
-  routes.UpdateRequest:
+  UpdateRequest:
     properties:
       humidity:
         example: 50
@@ -37,7 +37,7 @@ info:
   contact: {}
   description: Home environment sensor monitoring API
   title: Home Env API
-  version: 3.0.0
+  version: 3.1.0
 paths:
   /data:
     get:
@@ -49,7 +49,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/routes.DataResponse'
+            $ref: '#/definitions/DataResponse'
       summary: Get current sensor data
   /update:
     post:
@@ -68,7 +68,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/routes.UpdateRequest'
+          $ref: '#/definitions/UpdateRequest'
       responses:
         "202":
           description: Accepted

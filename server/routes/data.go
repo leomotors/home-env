@@ -13,7 +13,7 @@ type DataResponse struct {
 	Temperature float64 `json:"temperature" example:"25.50" validate:"required"`
 	Humidity    float64 `json:"humidity" example:"48.20" validate:"required"`
 	LastUpdated float64 `json:"lastUpdated" example:"2.14" validate:"required"`
-}
+} //	@name	DataResponse
 
 // @Summary		Get current sensor data
 // @Description	Returns the latest temperature and humidity reading from the main room sensor

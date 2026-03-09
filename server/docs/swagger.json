@@ -4,7 +4,7 @@
         "description": "Home environment sensor monitoring API",
         "title": "Home Env API",
         "contact": {},
-        "version": "3.0.0"
+        "version": "3.1.0"
     },
     "host": "localhost:8939",
     "basePath": "/",
@@ -20,7 +20,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/routes.DataResponse"
+                            "$ref": "#/definitions/DataResponse"
                         }
                     }
                 }
@@ -47,7 +47,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/routes.UpdateRequest"
+                            "$ref": "#/definitions/UpdateRequest"
                         }
                     }
                 ],
@@ -69,7 +69,7 @@
         }
     },
     "definitions": {
-        "routes.DataResponse": {
+        "DataResponse": {
             "type": "object",
             "required": [
                 "humidity",
@@ -91,7 +91,7 @@
                 }
             }
         },
-        "routes.UpdateRequest": {
+        "UpdateRequest": {
             "type": "object",
             "required": [
                 "humidity",

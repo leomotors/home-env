@@ -20,7 +20,7 @@ type UpdateRequest struct {
 	SensorID    string  `json:"sensorId" example:"main_room" validate:"required"`
 	Temperature float64 `json:"temperature" example:"24.50" validate:"required"`
 	Humidity    float64 `json:"humidity" example:"50.00" validate:"required"`
-}
+} //	@name	UpdateRequest
 
 // @Summary		Update sensor data
 // @Description	Receives temperature and humidity data from an ESP32 sensor. Local network only.
