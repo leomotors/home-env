@@ -51,12 +51,11 @@ definitions:
     - sensorId
     - temperature
     type: object
-host: localhost:8939
 info:
   contact: {}
   description: Home environment sensor monitoring API
   title: Home Env API
-  version: 3.1.0
+  version: 3.2.0
 paths:
   /data:
     get:

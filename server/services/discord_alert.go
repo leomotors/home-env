@@ -11,6 +11,12 @@ import (
 
 func alertDiscord(msg string) {
 	secret := GetSecret()
+
+	if secret.DISABLE_ALERT {
+		log.Println("[DISCORD ALERT] Alert disabled, skipping Discord message")
+		return
+	}
+
 	token := secret.DISCORD_TOKEN
 	channelID := secret.DISCORD_CHANNEL_ID
 

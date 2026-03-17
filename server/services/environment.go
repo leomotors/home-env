@@ -13,6 +13,8 @@ type Secret struct {
 	DISCORD_CHANNEL_ID uint64
 
 	DATABASE_URL string
+
+	DISABLE_ALERT bool
 }
 
 var secret = Secret{}
@@ -24,19 +26,23 @@ func parseSecret() {
 		panic("PASSWORD environment variable not set.")
 	}
 
-	secret.DISCORD_TOKEN = os.Getenv("DISCORD_TOKEN")
-	if secret.DISCORD_TOKEN == "" {
-		panic("DISCORD_TOKEN environment variable not set.")
+	secret.DISABLE_ALERT = os.Getenv("DISABLE_ALERT") == "true"
+
+	if !secret.DISABLE_ALERT {
+		secret.DISCORD_TOKEN = os.Getenv("DISCORD_TOKEN")
+		if secret.DISCORD_TOKEN == "" {
+			panic("DISCORD_TOKEN environment variable not set.")
+		}
+
+		channelIDStr := os.Getenv("DISCORD_CHANNEL_ID")
+		channelID, _ := strconv.ParseUint(channelIDStr, 10, 64)
+
+		if channelID == 0 {
+			panic("DISCORD_CHANNEL_ID environment variable not set or invalid number.")
+		}
+
+		secret.DISCORD_CHANNEL_ID = channelID
 	}
-
-	channelIDStr := os.Getenv("DISCORD_CHANNEL_ID")
-	channelID, _ := strconv.ParseUint(channelIDStr, 10, 64)
-
-	if channelID == 0 {
-		panic("DISCORD_CHANNEL_ID environment variable not set or invalid number.")
-	}
-
-	secret.DISCORD_CHANNEL_ID = channelID
 
 	secret.DATABASE_URL = os.Getenv("DATABASE_URL")
 	if secret.DATABASE_URL == "" {

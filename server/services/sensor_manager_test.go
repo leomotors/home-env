@@ -7,6 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestGetAllSensors_HidesNaNReadings(t *testing.T) {
+	sensors = make(map[string]*SensorManager)
+
+	RegisterSensor("testid", "testname")
+	all := GetAllSensors()
+
+	assert.Len(t, all, 1)
+	assert.Nil(t, all[0].Temperature)
+	assert.Nil(t, all[0].Humidity)
+}
+
 func TestSensorManager(t *testing.T) {
 	sensor := NewSensorManager("testid", "testname")
 

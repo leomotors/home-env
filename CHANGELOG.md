@@ -4,6 +4,22 @@ Previous changelog before 1.7 will not be noted here.
 
 This changelog is for the server only.
 
+## [3.2.0] - 2026-03-12
+
+### Added
+
+- **`DISABLE_ALERT` environment variable** — set to `true` to suppress Discord messages while keeping all other logic (health checks, alert level tracking, terminal logging) intact; `DISCORD_TOKEN` and `DISCORD_CHANNEL_ID` are no longer required when alerts are disabled
+
+### Fixed
+
+- **Sensor sort order inconsistency** — `/data` endpoint now returns sensors sorted by ID, fixing random ordering caused by Go map iteration
+- **Null sensor crash on frontend** — `toFixed()` was called on `null` temperature/humidity when a sensor was registered but had not yet sent data; frontend now guards against null values
+- **False online status during initialization** — sensors are no longer reported as `online` until they have sent valid readings (non-NaN)
+
+### Changed
+
+- **Renamed `prometheus.go`** — `services/prometheus.go` renamed to `services/sensor_registry.go` to reflect that Prometheus is no longer used
+
 ## [3.1.0] - 2026-03-09
 
 ### Breaking Changes

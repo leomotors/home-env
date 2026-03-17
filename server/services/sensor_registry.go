@@ -1,6 +1,8 @@
 package services
 
 import (
+	"math"
+	"sort"
 	"time"
 )
 
@@ -65,18 +67,23 @@ func GetAllSensors() []PublicSensorDetail {
 	result := make([]PublicSensorDetail, 0, len(sensors))
 
 	for _, sensor := range sensors {
+		hasValidReadings := !math.IsNaN(sensor.values.temperature) && !math.IsNaN(sensor.values.humidity)
 		detail := PublicSensorDetail{
 			Id:          sensor.id,
 			Name:        sensor.name,
 			LastUpdated: time.Since(sensor.lastUpdated).Seconds(),
-			Online:      sensor.values.healthStatus,
+			Online:      sensor.values.healthStatus && hasValidReadings,
 		}
-		if sensor.values.healthStatus {
+		if detail.Online {
 			detail.Temperature = &sensor.values.temperature
 			detail.Humidity = &sensor.values.humidity
 		}
 		result = append(result, detail)
 	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Id < result[j].Id
+	})
 
 	return result
 }

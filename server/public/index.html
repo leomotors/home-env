@@ -199,14 +199,14 @@
               <div class="reading">
                 <div class="reading-label">Temperature</div>
                 <div class="reading-value">
-                  ${s.online ? s.temperature.toFixed(1) : "&mdash;"}
+                  ${s.temperature != null ? s.temperature.toFixed(1) : "&mdash;"}
                   <span class="unit">&deg;C</span>
                 </div>
               </div>
               <div class="reading">
                 <div class="reading-label">Humidity</div>
                 <div class="reading-value">
-                  ${s.online ? s.humidity.toFixed(1) : "&mdash;"}
+                  ${s.humidity != null ? s.humidity.toFixed(1) : "&mdash;"}
                   <span class="unit">%</span>
                 </div>
               </div>

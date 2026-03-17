@@ -14,9 +14,8 @@ import (
 )
 
 //	@title			Home Env API
-//	@version		3.1.0
+//	@version		3.2.0
 //	@description	Home environment sensor monitoring API
-//	@host			localhost:8939
 //	@BasePath		/
 
 func healthCheckLoop() {

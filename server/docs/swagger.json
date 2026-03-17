@@ -4,9 +4,8 @@
         "description": "Home environment sensor monitoring API",
         "title": "Home Env API",
         "contact": {},
-        "version": "3.1.0"
+        "version": "3.2.0"
     },
-    "host": "localhost:8939",
     "basePath": "/",
     "paths": {
         "/data": {
